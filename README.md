@@ -93,3 +93,23 @@ du prompt ne suffit pas à supprimer toutes les fausses alertes de ce petit mod�
 
 Les délimiteurs sont une consigne au modèle, pas une frontière de sécurité.
 Le juge peut être trompé et n'est pas universellement la meilleure approche.
+
+## Étape 4 — Ensemble par OU
+
+`detect_ensemble` renvoie `regex OU classifieur OU juge`, en court-circuit : un
+signalement suffit. Le cache assure que la comparaison réutilise les décisions
+des étapes précédentes dans la même exécution.
+
+| Détecteur | Précision | Rappel | VP | FP | VN | FN |
+|---|---:|---:|---:|---:|---:|---:|
+| Regex | 100 % | 57,14 % | 4 | 0 | 5 | 3 |
+| Classifieur | 100 % | 42,86 % | 3 | 0 | 5 | 4 |
+| Juge | 77,78 % | 100 % | 7 | 2 | 3 | 0 |
+| Ensemble | 77,78 % | 100 % | 7 | 2 | 3 | 0 |
+
+L'ensemble conserve les deux fausses alertes du juge, listées à l'étape 3.
+Son rappel est ici égal à celui du juge. **Le OU ne peut pas diminuer le rappel
+sur les mêmes verdicts, mais il cumule les fausses alertes** : la précision peut
+baisser. Il ne garantit donc pas une amélioration simultanée des deux mesures.
+Des assertions vérifient cette propriété du rappel et l'équivalence au OU pour
+chaque texte évalué.

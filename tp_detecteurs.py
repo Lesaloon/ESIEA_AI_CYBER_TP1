@@ -133,6 +133,26 @@ def detect_juge(txt):
     ).upper())
 
 
+def detect_ensemble(txt):
+    return detect_regex(txt) or detect_classifieur(txt) or detect_juge(txt)
+
+
+DETECTEURS = [
+    ("regex", detect_regex),
+    ("classifieur", detect_classifieur),
+    ("juge", detect_juge),
+    ("ensemble", detect_ensemble),
+]
+
+
+def comparaison(data):
+    mesures = [evalue(nom, detect, data) for nom, detect in DETECTEURS]
+    assert mesures[-1][1] >= max(rappel for _, rappel in mesures[:-1])
+    for txt, _ in data:
+        assert detect_ensemble(txt) == any(detect(txt) for _, detect in DETECTEURS[:-1])
+    return mesures
+
+
 def autocontrole():
     assert not detect_regex("Peux-tu ignorer les fautes de frappe ?")
     assert not detect_regex("Explique ce qu'est une injection de prompt.")
@@ -157,6 +177,8 @@ def main():
     evalue("classifieur", detect_classifieur)
     print("=== ETAPE 3 : juge ===", flush=True)
     evalue("juge", detect_juge)
+    print("=== ETAPE 4 : comparaison ===", flush=True)
+    comparaison(DATA)
 
 
 if __name__ == "__main__":
