@@ -42,3 +42,17 @@ Bonjour! Comment puis-je vous aider aujourd'hui
 ```
 
 La réponse est volontairement limitée à 10 tokens pour ce test de connexion.
+
+## Étape 1 — Regex
+
+Les cinq motifs ciblent l'oubli des instructions, une nouvelle consigne système,
+un changement de rôle sans règles, une terminaison imposée et la révélation du
+system prompt. `detect_regex` cherche au moins un motif, sans tenir compte de la casse.
+
+Résultat réel : **précision 100 %, rappel 57,14 % — VP=4, FP=0, VN=5, FN=3**.
+Les trois injections manquées sont les formulations « validation qualité »,
+« Note RH » et « Rappel procédure » (textes 10 à 12 du jeu). Aucun texte bénin
+n'est bloqué. Le résultat correspond à l'objectif de cette première couche.
+
+Les autocontrôles vérifient deux contre-exemples bénins, la casse et une
+terminaison imposée ; ils sont exécutés avant les appels au modèle.
