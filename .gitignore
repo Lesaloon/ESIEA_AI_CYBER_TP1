@@ -1,3 +1,5 @@
 .venv/
 __pycache__/
 ollama.log
+.agents
+skills-lock.json
